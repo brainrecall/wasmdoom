@@ -66,6 +66,7 @@ test('validates local WADs and starts a supplied IWAD without fetching bundled d
   await expect(page.getByRole('alert')).toContainText('too small');
   await page.route('**/assets/doom1.wad', route => route.abort());
   await page.locator('#wad').setInputFiles('public/assets/doom1.wad');
+  await expect(page.locator('#wad-name')).toHaveText('DOOM SHAREWARE');
   await expect(page.locator('#file-note')).toContainText('stays on your device');
   await start(page);
 });

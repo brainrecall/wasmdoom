@@ -1,4 +1,4 @@
-import { validateWad } from './wad.js';
+import { validateWad, identifyWad } from './wad.js';
 import { connectSaves } from './saves.js';
 
 const $ = (id) => document.getElementById(id);
@@ -94,7 +94,7 @@ $('wad').addEventListener('change', async (event) => {
   try {
     if (file.size > 128 * 1024 * 1024) throw new Error('Choose an IWAD smaller than 128 MB.');
     selectedWad = validateWad(new Uint8Array(await file.arrayBuffer()));
-    $('wad-name').textContent = file.name.toUpperCase();
+    $('wad-name').textContent = identifyWad(selectedWad) || file.name.toUpperCase();
     $('overlay-caption').textContent = 'YOUR WAD / READY';
     $('file-note').textContent = `${file.name} · ${(file.size / 1048576).toFixed(1)} MB · stays on your device`;
     $('error').hidden = true;
