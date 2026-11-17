@@ -38,8 +38,10 @@ export function identifyWad(bytes) {
   }
   const maps = highest('MAP');
   if (maps === 9) return 'DOOM II SHAREWARE';
-  if (names.has('TNT')) return 'TNT: EVILUTION';
-  if (names.has('PLUT0') || names.has('PLUT1')) return 'THE PLUTONIA EXPERIMENT';
-  if (maps >= 35) return 'DOOM II';
+  // Stock Final Doom v1.9 IWADs are Doom II-based (32 maps, generic
+  // TITLEPIC lump), so fingerprint their unique textures instead.
+  if (names.has('TNT') || names.has('BTNTCRAT')) return 'TNT: EVILUTION';
+  if (names.has('PLUT0') || names.has('PLUT1') || (names.has('MC1') && names.has('MC20'))) return 'THE PLUTONIA EXPERIMENT';
+  if (maps >= 32) return 'DOOM II';
   return null;
 }

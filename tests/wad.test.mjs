@@ -39,6 +39,9 @@ test('names each known release from its level lumps', () => {
   assert.equal(identifyWad(buildIwad(['PLAYPAL', ...maps('MAP', 9)])), 'DOOM II SHAREWARE');
   assert.equal(identifyWad(buildIwad(['PLAYPAL', 'TNT', ...maps('MAP', 32)])), 'TNT: EVILUTION');
   assert.equal(identifyWad(buildIwad(['PLAYPAL', 'PLUT0', ...maps('MAP', 32)])), 'THE PLUTONIA EXPERIMENT');
+  assert.equal(identifyWad(buildIwad(['PLAYPAL', 'BTNTCRAT', ...maps('MAP', 32)])), 'TNT: EVILUTION');
+  assert.equal(identifyWad(buildIwad(['PLAYPAL', 'MC1', 'MC20', ...maps('MAP', 32)])), 'THE PLUTONIA EXPERIMENT');
+  assert.equal(identifyWad(buildIwad(['PLAYPAL', ...maps('MAP', 32)])), 'DOOM II');
   assert.equal(identifyWad(buildIwad(['PLAYPAL', ...maps('MAP', 36)])), 'DOOM II');
 });
 
