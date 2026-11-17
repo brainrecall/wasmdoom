@@ -120,7 +120,9 @@ $('play').addEventListener('click', async () => {
       import('./engine/doom.js'),
       selectedWad || fetch('./assets/doom1.wad').then(async (response) => {
         if (!response.ok) throw new Error(`Game data download failed (${response.status}).`);
-        return validateWad(new Uint8Array(await response.arrayBuffer()));
+        const wad = validateWad(new Uint8Array(await response.arrayBuffer()));
+        $('wad-name').textContent = identifyWad(wad) || 'DOOM SHAREWARE';
+        return wad;
       }),
     ]);
     engine = await createDoom({

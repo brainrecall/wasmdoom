@@ -79,6 +79,34 @@ test('download failure is visible and offers retry', async ({page}) => {
   await expect(page.getByRole('button', {name:'RELOAD & RETRY'})).toBeEnabled();
 });
 
+function buildIwad(lumpNames) {
+  const lumps = lumpNames.map(() => new Uint8Array([0, 0, 0, 0]));
+  const body = lumps.reduce((size, lump) => size + lump.length, 0);
+  const out = Buffer.alloc(12 + body + lumpNames.length * 16);
+  out.write('IWAD', 0, 'latin1');
+  out.writeInt32LE(lumpNames.length, 4);
+  out.writeInt32LE(12, 8);
+  let offset = 12;
+  for (const lump of lumps) { out.set(lump, offset); offset += lump.length; }
+  for (let i = 0; i < lumpNames.length; i++) {
+    const entry = 12 + body + i * 16;
+    out.writeInt32LE(12 + lumps.slice(0, i).reduce((size, lump) => size + lump.length, 0), entry);
+    out.writeInt32LE(lumps[i].length, entry + 4);
+    out.write(lumpNames[i].padEnd(8, '\0').slice(0, 8), entry + 8, 'latin1');
+  }
+  return new Uint8Array(out.buffer);
+}
+const maps = (prefix, count) => Array.from({length: count}, (_, i) => `${prefix}${String(i + 1).padStart(prefix === 'MAP' ? 2 : 1, '0')}`);
+
+test('labels the page from the bundled WAD when it is overridden by another release', async ({page}) => {
+  const wad = buildIwad(['PLAYPAL', ...[1, 2, 3, 4].flatMap((e) => maps(`E${e}M`, 9))]);
+  await page.route('**/assets/doom1.wad', route => route.fulfill({body: Buffer.from(wad)}));
+  await page.goto('/');
+  await expect(page.locator('#wad-name')).toHaveText('DOOM SHAREWARE');
+  await page.getByRole('button', {name:'PLAY DOOM'}).click();
+  await expect(page.locator('#wad-name')).toHaveText('THE ULTIMATE DOOM');
+});
+
 test('layout fits narrow screens', async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto('/');
